@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta content="width=device-width,initial-scale=1.0,maxinmum-scale=1.0,user-scalable=0" name="viewport" />
+  <meta charset="UTF-8" />
+  <title>题库</title>
+
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      list-style: none;
+    }
+
+    html,
+    body {
+      width: 100%;
+      height: fit-content;
+    }
+
+    .main {
+      width: 100%;
+      height: fit-content;
+      padding: 30px;
+      box-sizing: border-box;
+
+      .list-item {
+        margin-bottom: 30px;
+
+        .title {
+          word-wrap: break-word;
+          margin-bottom: 10px;
+        }
+
+        .right {
+          margin-top: 10px;
+        }
+
+        .jx {
+          margin-top: 10px;
+        }
+      }
+    }
+
+    .page-item {
+      cursor: pointer;
+    }
+
+    .pagination {
+      width: 100%;
+      padding: 10px !important;
+      box-sizing: border-box;
+      display: flex;
+      flex-wrap: wrap;
+      li{
+        width: 40px;
+        height: 40px;
+        text-align: center;
+        margin-bottom: 10px;
+        a{
+          width: 100%;
+          height: 100%;
+          padding: 0;
+          line-height: 40px;
+        }
+      }
+    }
+  </style>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
+</head>
+
+<body>
+  <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.min.js"></script>
+  <div class="main"></div>
+  <nav aria-label="Page navigation example">
+    <ul class="pagination"></ul>
+  </nav>
+  <script src="./data.js"></script>
+  <script>
+    const main = document.querySelector(".main");
+
+    let arr = [];
+    let current = 1;
+    let size = 150;
+    let pageData = [];
+    const total = Math.ceil(data.length / size);
+    let pageDom = "";
+    const pagination = document.getElementsByClassName("pagination")[0];
+    for (let i = 0; i < total; i++) {
+      pageDom += `<li class="page-item page-tag ${current == i + 1 ? "active" : ""
+        }" ><a class="page-link">${i + 1}</a></li>`;
+    }
+    pagination.innerHTML = pageDom;
+    const page = document.querySelectorAll(".page-tag");
+    page.forEach((item, index) => {
+      item.addEventListener("click", () => {
+        page.forEach((info) => {
+          info.classList.remove("active");
+        });
+        item.classList.add("active");
+        document.documentElement.scrollTop = 0;
+        let insertData = data.slice(index * size, index * size + size);
+        render(insertData, index);
+      });
+    });
+    render(data.slice(0, size), 0);
+    function render(domData, index) {
+      let dom = "";
+      domData.map((item, idx) => {
+        dom += `
+    <div class="list-item">
+      <div class="title">${index * size + idx + 1}：【${item.type}】${item.title
+          }</div>
+
+    `;
+        for (let i in item) {
+          let right = item.right;
+          if ((i == "A" || i == "B" || i == "C" || i == "D") && item[i]) {
+            dom += `
+            <div class="form-check">
+              <input class="form-check-input" type="${item.type != "多选题（不定项选择题）" ? "radio" : "checkbox"
+              }" name="flexRadioDefault${idx}" id="flexRadioDefault${idx}${i}" ${right.includes(i) ? "checked" : ""
+              }>
+              <label class="form-check-label" for="flexRadioDefault${idx}${i}">
+                ${item[i]}
+              </label>
+            </div>`;
+          }
+        }
+        dom += `<div class="right">正确答案：${item.right}</div>`;
+        dom += `<div class="jx">解析：${item.jx || "--"}</div>`;
+        dom += `</div>`;
+      });
+      main.innerHTML = dom;
+    }
+  </script>
+</body>
+
+</html>
