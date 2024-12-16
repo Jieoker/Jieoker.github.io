@@ -1,94 +1,170 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="zh">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta
-      content="width=device-width,initial-scale=1.0,maxinmum-scale=1.0,user-scalable=0"
-      name="viewport"
-    />
-    <meta charset="UTF-8" />
     <title>试卷</title>
 
+    <!-- 引入Bootstrap 5 CDN -->
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
     <style>
       * {
         margin: 0;
         padding: 0;
         list-style: none;
       }
-    </style>
-    <link href="./bootstrap/bootstrap.css" rel="stylesheet" />
-    <style>
+
       html,
       body {
         width: 100%;
-        height: fit-content;
+        height: 100%;
+        font-family: "Arial", sans-serif;
+        background-color: #f0f2f5; /* 修改背景色为稍微温和的灰色 */
       }
 
       .main {
-        width: 100%;
-        height: fit-content;
-        padding: 30px;
+        padding: 40px;
         box-sizing: border-box;
+      }
 
-        .list-item {
-          margin-bottom: 30px;
+      .list-item {
+        margin-bottom: 25px;
+        display: flex;
+        flex-direction: column;
+        gap: 20px;
+        animation: fadeIn 0.5s ease-in-out;
+      }
 
-          .title {
-            word-wrap: break-word;
-            margin-bottom: 10px;
-          }
-
-          .right {
-            margin-top: 10px;
-          }
-
-          .jx {
-            margin-top: 10px;
-          }
+      /* 卡片动画效果 */
+      @keyframes fadeIn {
+        from {
+          opacity: 0;
+        }
+        to {
+          opacity: 1;
         }
       }
 
-      .page-item {
-        cursor: pointer;
-      }
-
-      .pagination {
-        width: 100%;
+      .title {
+        word-wrap: break-word;
+        margin-bottom: 15px;
+        font-size: 1.4rem;
+        font-weight: bold;
+        color: #333;
       }
 
       .form-check {
         cursor: pointer;
-
-        label {
-          cursor: pointer;
-        }
+        display: flex;
       }
 
-      .success {
-        color: green;
+      .form-check input {
+        margin-right: 10px;
+      }
 
-        .form-check-input:checked {
-          background-color: green;
-          border-color: green;
-        }
+      .form-check label {
+        cursor: pointer;
+      }
+
+      /* 成功和错误样式 */
+      .success {
+        color: #28a745;
+        font-weight: bold;
       }
 
       .error {
-        color: red;
+        color: #dc3545;
+        font-weight: bold;
+      }
 
-        .form-check-input:checked {
-          background-color: red;
-          border-color: red;
+      /* 卡片样式 */
+      .card {
+        border-radius: 15px;
+        box-shadow: 0 6px 15px rgba(0, 0, 0, 0.1);
+        border: 1px solid #ddd;
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+        background-color: #ffffff;
+      }
+
+      .card:hover {
+        transform: translateY(-10px); /* 鼠标悬停时，卡片上浮 */
+        box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+      }
+
+      .card-header {
+        background-color: #007bff;
+        color: white;
+        font-weight: bold;
+        font-size: 1.2rem;
+        border-top-left-radius: 15px;
+        border-top-right-radius: 15px;
+      }
+
+      .card-body {
+        padding: 25px;
+        background-color: #f9f9f9;
+      }
+
+      .card-title {
+        font-size: 1.2rem;
+        color: #333;
+        margin-bottom: 15px;
+      }
+
+      .card-body .form-check {
+        margin-bottom: 12px;
+      }
+
+      /* 提交按钮 */
+      .submit-btn {
+        width: 100%;
+        padding: 18px;
+        font-size: 1.3rem;
+        border-radius: 8px;
+        background: linear-gradient(45deg, #007bff, #0056b3);
+        color: white;
+        border: none;
+        transition: background-color 0.3s ease, transform 0.2s ease;
+      }
+
+      .submit-btn:hover {
+        background-color: #0056b3; /* 鼠标悬停按钮效果 */
+        transform: scale(1.05);
+      }
+
+      /* 响应式布局 */
+      @media (min-width: 768px) {
+        .main {
+          display: flex;
+          flex-direction: column;
+          gap: 20px;
+        }
+
+        .list-item {
+          width: 100%;
+        }
+      }
+
+      @media (min-width: 1200px) {
+        .list-item {
+          width: 100%;
+          margin-bottom: 30px;
         }
       }
     </style>
-    <script src="./bootstrap/bootstrap.js"></script>
   </head>
 
   <body>
-    <div class="main"></div>
-    <button type="button" class="btn btn-primary">提交</button>
+    <div class="container main">
+      <div class="list-container" id="quiz-container"></div>
+      <button type="button" class="btn submit-btn">提交</button>
+    </div>
+
+    <!-- 引入Bootstrap 5和自定义JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
     <script src="./data.js"></script>
     <script>
       document.addEventListener("DOMContentLoaded", () => {
@@ -112,7 +188,7 @@
             return [
               ...filterAndShuffle("判断题", booleanSize),
               ...filterAndShuffle("单选题", radioSize),
-              ...filterAndShuffle("多选题（不定项选择题）", checkboxSize),
+              ...filterAndShuffle("多选题", checkboxSize),
             ];
           }
 
@@ -130,18 +206,13 @@
               const correctAnswers = question.right.split("");
 
               const isCorrect =
-                question.type !== "多选题（不定项选择题）"
+                question.type !== "多选题"
                   ? selected[0] === question.right
                   : selected.length === correctAnswers.length &&
                     selected.every((val) => correctAnswers.includes(val));
 
               return (
-                score +
-                (isCorrect
-                  ? question.type === "多选题（不定项选择题）"
-                    ? 1
-                    : 0.5
-                  : 0)
+                score + (isCorrect ? (question.type === "多选题" ? 1 : 0.5) : 0)
               );
             }, 0);
 
@@ -167,29 +238,36 @@
               questionElement.id = `question${index}`;
 
               questionElement.innerHTML = `
-        <div class="title">${index + 1}：【${item.type}】${item.title}</div>
-        <div>
-          ${["A", "B", "C", "D"]
-            .filter((option) => item[option])
-            .map(
-              (option) => `
-              <div class="form-check">
-                <input
-                  class="form-check-input"
-                  type="${
-                    item.type !== "多选题（不定项选择题）"
-                      ? "radio"
-                      : "checkbox"
-                  }"
-                  name="question${index}"
-                  id="question${index}${option}"
-                  value="${option}">
-                <label for="question${index}${option}">${item[option]}</label>
-              </div>`
-            )
-            .join("")}
-        </div>
-      `;
+                <div class="card shadow-sm">
+                  <div class="card-header">
+                    ${index + 1}. 【${item.type}】
+                  </div>
+                  <div class="card-body">
+                    <h5 class="card-title">${item.title}</h5>
+                    <div class="form-group">
+                      ${["A", "B", "C", "D"]
+                        .filter((option) => item[option])
+                        .map(
+                          (option) => `
+                            <div class="form-check">
+                              <input
+                                class="form-check-input"
+                                type="${
+                                  item.type !== "多选题" ? "radio" : "checkbox"
+                                }"
+                                name="question${index}"
+                                id="question${index}${option}"
+                                value="${option}">
+                              <label for="question${index}${option}" class="form-check-label">${
+                            item[option]
+                          }</label>
+                            </div>`
+                        )
+                        .join("")}
+                    </div>
+                  </div>
+                </div>
+              `;
               fragment.appendChild(questionElement);
             });
             this.main.innerHTML = "";
@@ -221,7 +299,7 @@
             const question = this.viewModel.questions[index];
             if (question.type === "单选题") {
               question.selectedOptions = [value];
-            } else if (question.type === "多选题（不定项选择题）") {
+            } else if (question.type === "多选题") {
               if (!question.selectedOptions) {
                 question.selectedOptions = [];
               }
@@ -237,10 +315,8 @@
 
           updateUI(index) {
             const questionElement = document.getElementById(`question${index}`);
-            const selectedValues =
-              this.viewModel.questions[index].selectedOptions || [];
-            const correctAnswers =
-              this.viewModel.questions[index].right.split("");
+            const selectedValues = this.viewModel.questions[index].selectedOptions || [];
+            const correctAnswers = this.viewModel.questions[index].right.split("");
 
             questionElement
               .querySelectorAll(".form-check")
@@ -258,7 +334,7 @@
         }
 
         const viewModel = new ViewModel(data);
-        new QuizView(viewModel, ".main", ".btn");
+        new QuizView(viewModel, ".list-container", ".btn");
       });
     </script>
   </body>

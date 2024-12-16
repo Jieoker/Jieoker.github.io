@@ -122,7 +122,7 @@
           if ((i == "A" || i == "B" || i == "C" || i == "D") && item[i]) {
             dom += `
             <div class="form-check">
-              <input class="form-check-input" type="${item.type != "多选题（不定项选择题）" ? "radio" : "checkbox"
+              <input class="form-check-input" type="${item.type != "多选题" ? "radio" : "checkbox"
               }" name="flexRadioDefault${idx}" id="flexRadioDefault${idx}${i}" ${right.includes(i) ? "checked" : ""
               }>
               <label class="form-check-label" for="flexRadioDefault${idx}${i}">
