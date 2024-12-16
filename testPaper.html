@@ -297,7 +297,7 @@
 
           updateUserSelection(index, value, isChecked) {
             const question = this.viewModel.questions[index];
-            if (question.type === "单选题") {
+            if (question.type === "单选题" || question.type === "判断题") {
               question.selectedOptions = [value];
             } else if (question.type === "多选题") {
               if (!question.selectedOptions) {
