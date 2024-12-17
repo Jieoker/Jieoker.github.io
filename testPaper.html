@@ -238,36 +238,36 @@
               questionElement.id = `question${index}`;
 
               questionElement.innerHTML = `
-                <div class="card shadow-sm">
-                  <div class="card-header">
-                    ${index + 1}. 【${item.type}】
-                  </div>
-                  <div class="card-body">
-                    <h5 class="card-title">${item.title}</h5>
-                    <div class="form-group">
-                      ${["A", "B", "C", "D"]
-                        .filter((option) => item[option])
-                        .map(
-                          (option) => `
-                            <div class="form-check">
-                              <input
-                                class="form-check-input"
-                                type="${
-                                  item.type !== "多选题" ? "radio" : "checkbox"
-                                }"
-                                name="question${index}"
-                                id="question${index}${option}"
-                                value="${option}">
-                              <label for="question${index}${option}" class="form-check-label">${
-                            item[option]
-                          }</label>
-                            </div>`
-                        )
-                        .join("")}
-                    </div>
-                  </div>
-                </div>
-              `;
+          <div class="card shadow-sm">
+            <div class="card-header">
+              ${index + 1}. 【${item.type}】
+            </div>
+            <div class="card-body">
+              <h5 class="card-title">${item.title}</h5>
+              <div class="form-group">
+                ${["A", "B", "C", "D"]
+                  .filter((option) => item[option])
+                  .map(
+                    (option) => `
+                      <div class="form-check">
+                        <input
+                          class="form-check-input"
+                          type="${
+                            item.type !== "多选题" ? "radio" : "checkbox"
+                          }"
+                          name="question${index}"
+                          id="question${index}${option}"
+                          value="${option}">
+                        <label for="question${index}${option}" class="form-check-label">${
+                      item[option]
+                    }</label>
+                      </div>`
+                  )
+                  .join("")}
+              </div>
+            </div>
+          </div>
+        `;
               fragment.appendChild(questionElement);
             });
             this.main.innerHTML = "";
@@ -286,12 +286,12 @@
                   event.target.value,
                   event.target.checked
                 );
-                this.updateUI(questionIndex);
               }
             });
 
             this.button.addEventListener("click", () => {
               this.viewModel.calculateScore();
+              this.updateAllUI(); // Update all questions' UI after calculation.
             });
           }
 
@@ -313,22 +313,25 @@
             }
           }
 
+          updateAllUI() {
+            this.viewModel.questions.forEach((question, index) => {
+              this.updateUI(index);
+            });
+          }
+
           updateUI(index) {
             const questionElement = document.getElementById(`question${index}`);
-            const selectedValues = this.viewModel.questions[index].selectedOptions || [];
-            const correctAnswers = this.viewModel.questions[index].right.split("");
+            const correctAnswers =
+              this.viewModel.questions[index].right.split("");
 
             questionElement
               .querySelectorAll(".form-check")
               .forEach((formCheck) => {
                 const input = formCheck.querySelector(".form-check-input");
-                const isChecked = selectedValues.includes(input.value);
                 const isRightOption = correctAnswers.includes(input.value);
 
                 formCheck.classList.remove("success", "error");
-                if (isChecked) {
-                  formCheck.classList.add(isRightOption ? "success" : "error");
-                }
+                formCheck.classList.add(isRightOption ? "success" : "error");
               });
           }
         }
